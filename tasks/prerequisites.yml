@@ -1,0 +1,12 @@
+---
+
+- name: Install pip
+  ansible.builtin.package:
+    name: pip
+    state: present
+
+- name: Install pip packages
+  ansible.builtin.pip:
+    name:
+      - pyyaml
+      - kubernetes

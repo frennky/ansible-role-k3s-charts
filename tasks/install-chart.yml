@@ -1,0 +1,30 @@
+---
+
+- name: Copy {{ chart.name }} manifest
+  ansible.builtin.template:
+    src: "{{ chart.name }}.yaml.j2"
+    dest: "{{ k3s.manifest_dir }}/{{ chart.name }}.yaml"
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Get pod info
+  kubernetes.core.k8s_info:
+    kubeconfig: "{{ k3s.kube_config }}"
+    kind: Pod
+    namespace: "{{ chart.namespace }}"
+    field_selectors:
+      - status.phase=Running
+    wait: true
+    wait_sleep: 10
+    wait_timeout: 300
+  register: pod_info
+  when: not ansible_check_mode
+
+- name: Print pod info
+  ansible.builtin.fail:
+    msg: >-
+      {{ pod_info }}
+  when: 
+    - not ansible_check_mode
+    - pod_info.resources | length == 0

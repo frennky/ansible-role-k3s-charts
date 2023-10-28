@@ -1,0 +1,95 @@
+---
+
+k3s:
+  manifest_dir: /var/lib/rancher/k3s/server/manifests
+
+dns_zone: "{{ undef(hint='You must provide DNS zone') }}"
+api_token: "{{ undef(hint='You must provide API token') }}"
+email: "{{ undef(hint='You must provide email address') }}"
+cluster_issuer: letsencrypt-staging
+grafana_user: "{{ undef(hint='You must provide Grafana username') }}"
+grafana_password: "{{ undef(hint='You must provide Grafana password') }}"
+external_ips: "{{ undef(hint='You must provide Master node IPs') }}"
+endpoints: "{{ undef(hint='You must provide node IPs') }}"
+
+charts:
+  - name: traefik
+    namespace: kube-system
+
+  - name: cert-manager
+    namespace: cert-manager
+    repo: https://charts.jetstack.io
+    secret_name: cloudflare-api-token-secret
+    dns_zone: "{{ dns_zone }}"
+    api_token: "{{ api_token }}"
+    email: "{{ email }}"
+    nameserver: '1.1.1.1'
+
+  - name: longhorn
+    namespace: longhorn-system
+    repo: https://charts.longhorn.io
+    dns_zone: "{{ dns_zone }}"
+
+  - name: kube-prometheus-stack
+    namespace: monitoring
+    repo: https://prometheus-community.github.io/helm-charts
+    dns_zone: "{{ dns_zone }}"
+    endpoints: "{{ endpoints }}"
+    grafana:
+      user: "{{ grafana_user | default('admin', true) | b64encode }}"
+      password: "{{ grafana_password | default('admin@grafana', true) | b64encode }}"
+  
+  - name: loki-stack
+    namespace: loki-system
+    repo: https://grafana.github.io/helm-charts
+  
+  - name: heimdall
+    namespace: heimdall
+    repo: https://raw.githubusercontent.com/frennky/lab/charts
+    version: '0.4.0'
+    dns_zone: "{{ dns_zone }}"
+    cluster_issuer: "{{ cluster_issuer }}"
+
+  - name: transmission
+    namespace: transmission
+    repo: https://raw.githubusercontent.com/frennky/lab/charts
+    version: '0.3.0'
+    dns_zone: "{{ dns_zone }}"
+    cluster_issuer: "{{ cluster_issuer }}"
+
+  - name: radarr
+    namespace: radarr
+    repo: https://raw.githubusercontent.com/frennky/lab/charts
+    version: '0.3.0'
+    dns_zone: "{{ dns_zone }}"
+    cluster_issuer: "{{ cluster_issuer }}"
+
+  - name: sonarr
+    namespace: sonarr
+    repo: https://raw.githubusercontent.com/frennky/lab/charts
+    version: '0.3.0'
+    dns_zone: "{{ dns_zone }}"
+    cluster_issuer: "{{ cluster_issuer }}"
+  
+  - name: readarr
+    namespace: readarr
+    repo: https://raw.githubusercontent.com/frennky/lab/charts
+    version: '0.3.0'
+    dns_zone: "{{ dns_zone }}"
+    cluster_issuer: "{{ cluster_issuer }}"
+  
+  - name: prowlarr
+    namespace: prowlarr
+    repo: https://raw.githubusercontent.com/frennky/lab/charts
+    version: '0.3.0'
+    dns_zone: "{{ dns_zone }}"
+    cluster_issuer: "{{ cluster_issuer }}"
+  
+  - name: unifi
+    namespace: unifi
+    repo: https://raw.githubusercontent.com/frennky/lab/charts
+    version: '0.3.2'
+    dns_zone: "{{ dns_zone }}"
+    cluster_issuer: "{{ cluster_issuer }}"
+    external_ips: "{{ external_ips }}"
+  

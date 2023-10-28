@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ chart.namespace }}
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: {{ chart.namespace }}
+  namespace: kube-system
+spec:
+  repo: {{ chart.repo }}
+  chart: {{ chart.name }}
+  version: {{ chart.version }}
+  targetNamespace: {{ chart.namespace }}
+  valuesContent: |-
+    persistence:
+      storageClass: longhorn
+    ingress:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: {{ chart.cluster_issuer }}
+      className: traefik
+      host: "{{ chart.name }}.internal.{{ chart.dns_zone }}"
+      tls:
+        secretName: "{{ chart.name }}-tls"
+    externalIPs: {{ chart.external_ips }}

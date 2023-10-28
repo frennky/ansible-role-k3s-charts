@@ -1,0 +1,10 @@
+---
+
+- name: Import prerequisite tasks
+  ansible.builtin.import_tasks: prerequisites.yml
+
+- name: Include install chart tasks
+  ansible.builtin.include_tasks: install-chart.yml
+  vars:
+    chart: "{{ item }}"
+  loop: "{{ charts }}"

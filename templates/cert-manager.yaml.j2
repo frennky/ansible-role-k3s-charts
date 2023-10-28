@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ chart.namespace }}
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: {{ chart.namespace }}
+  namespace: kube-system
+spec:
+  repo: {{ chart.repo }}
+  chart: {{ chart.name }}
+  targetNamespace: {{ chart.namespace }}
+  valuesContent: |-
+    installCRDs: true
+    extraArgs:
+      - --dns01-recursive-nameservers={{ chart.nameserver }}:53
+      - --dns01-recursive-nameservers-only
+    podDnsPolicy: None
+    podDnsConfig:
+      nameservers:
+        - {{ chart.nameserver }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ chart.secret_name }}
+  namespace: {{ chart.namespace }}
+type: Opaque
+stringData:
+  api-token: {{ chart.api_token }}
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging
+spec:
+  acme:
+    email: {{ chart.email }}
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-staging
+    solvers:
+    - dns01:
+        cloudflare:
+          apiTokenSecretRef:
+            name: {{ chart.secret_name }}
+            key: api-token
+      selector:
+        dnsZones:
+        - {{ dns_zone }}
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    email: {{ chart.email }}
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - dns01:
+        cloudflare:
+          apiTokenSecretRef:
+            name: {{ chart.secret_name }}
+            key: api-token
+      selector:
+        dnsZones:
+        - {{ dns_zone }}

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ chart.namespace }}
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: {{ chart.namespace }}
+  namespace: kube-system
+spec:
+  repo: {{ chart.repo }}
+  chart: {{ chart.name }}
+  targetNamespace: {{ chart.namespace }}
+  valuesContent: |-
+    ingress:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-staging
+      ingressClassName: traefik
+      host: "{{ chart.name }}.internal.{{ chart.dns_zone }}"
+      tls: true
+      tlsSecret: "{{ chart.name }}-tls"
