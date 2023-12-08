@@ -1,6 +1,6 @@
 ---
 
-- name: Copy {{ chart.name }} manifest
+- name: Copy manifest {{ chart.name }}
   ansible.builtin.template:
     src: "{{ chart.name }}.yaml.j2"
     dest: "{{ k3s.manifest_dir }}/{{ chart.name }}.yaml"
@@ -25,6 +25,6 @@
   ansible.builtin.fail:
     msg: >-
       {{ pod_info }}
-  when: 
+  when:
     - not ansible_check_mode
     - pod_info.resources | length == 0
