@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: k3s_charts
   author: frennky
   description: Install Helm charts using K3s Helm Operator.
 
