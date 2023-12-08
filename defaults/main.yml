@@ -38,11 +38,11 @@ charts:
     grafana:
       user: "{{ grafana_user | default('admin', true) | b64encode }}"
       password: "{{ grafana_password | default('admin@grafana', true) | b64encode }}"
-  
+
   - name: loki-stack
     namespace: loki-system
     repo: https://grafana.github.io/helm-charts
-  
+
   - name: heimdall
     namespace: heimdall
     repo: https://raw.githubusercontent.com/frennky/lab/charts
@@ -70,21 +70,21 @@ charts:
     version: '0.3.0'
     dns_zone: "{{ dns_zone }}"
     cluster_issuer: "{{ cluster_issuer }}"
-  
+
   - name: readarr
     namespace: readarr
     repo: https://raw.githubusercontent.com/frennky/lab/charts
     version: '0.3.0'
     dns_zone: "{{ dns_zone }}"
     cluster_issuer: "{{ cluster_issuer }}"
-  
+
   - name: prowlarr
     namespace: prowlarr
     repo: https://raw.githubusercontent.com/frennky/lab/charts
     version: '0.3.0'
     dns_zone: "{{ dns_zone }}"
     cluster_issuer: "{{ cluster_issuer }}"
-  
+
   - name: unifi
     namespace: unifi
     repo: https://raw.githubusercontent.com/frennky/lab/charts
@@ -92,4 +92,3 @@ charts:
     dns_zone: "{{ dns_zone }}"
     cluster_issuer: "{{ cluster_issuer }}"
     external_ips: "{{ external_ips }}"
-  
